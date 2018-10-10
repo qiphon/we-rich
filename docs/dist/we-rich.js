@@ -82,8 +82,14 @@ function format(nodes, options) {
     var type = node.type;
     if (type === 'element') {
       var tagName = node.tagName.toLowerCase();
+      // console.log(tagName,node.attributes)
       var name = options.supportTags.indexOf(tagName) >= 0 ? tagName : 'div';
-      var attributes = formatAttributes(node.attributes);
+      if(tagName === 'img'){
+        var attributes = formatAttributes(node.attributes,true);
+        // console.log(node.attributes)
+      }else{
+        var attributes = formatAttributes(node.attributes);
+      }
       var children = format(node.children, options);
       return { type: 'node', name: name, attrs: attributes, children: children };
     }
@@ -98,17 +104,26 @@ function format(nodes, options) {
   // 小程序只支持 node 和 text节点. comment要过滤掉
 }
 
-function formatAttributes(attributes) {
+function formatAttributes(attributes,img=false) {  /// 给图片添加独特的类名，让图片变得可以控制
   var attrs = {};
   attributes.map(function (attribute) {
     var parts = splitHead(attribute.trim(), '=');
+    // img && console.log(parts)
     var key = parts[0];
     var value = typeof parts[1] === 'string' ? unquote(parts[1]) : null;
-    if (key === 'style' || key === 'class' || key === 'src') {
+    if(key === 'class'){
+      attrs[key] = value+' qiphon-parse';
+    }
+    if (key === 'style' || key === 'src') {
       attrs[key] = value;
     }
     return { key: key, value: value };
   });
+  // img && console.log(attrs)
+  if(img && !attrs.class){
+    // console.log(attrs)
+    attrs.class = 'qiphon-parse'
+  }
   return attrs;
 }
 
@@ -147,6 +162,7 @@ var parseDefaults = exports.parseDefaults = {
 };
 
 function parse(str) {
+  // console.log(arguments)
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : parseDefaults;
 
   var tokens = (0, _lexer2.default)(str, options);
