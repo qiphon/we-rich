@@ -70,4 +70,8 @@ const weRich = require('we-rich');
 var nodes = weRich.parse(html);
 ```
 
+### qiphon修改
+
+1. 为了更方便控制解析后的图片，在解析的时候给图片更换了类名。（我是直接修改的dist/we-rich.js） 
+
 ## 此项目基于 [himalaya](https://github.com/andrejewski/himalaya)
